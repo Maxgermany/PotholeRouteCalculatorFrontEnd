@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
+import 'package:potholeroutes/models/Pothole.dart';
+import 'package:potholeroutes/services/RestService.dart';
+import 'package:potholeroutes/models/ServiceRoute.dart';
 
 void main() {
   runApp(MyApp());
@@ -52,43 +55,42 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  Future<ServiceRoute> serviceRoute;
+  final RestService restService = new RestService();
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  @override
+  void initState() {
+    super.initState();
+    serviceRoute = restService.fetchRoute();
   }
 
   @override
   Widget build(BuildContext context) {
-    return new FlutterMap(
-      options: new MapOptions(
-        center: LatLng(51.5, -0.09),
-        zoom: 13.0,
+    return MaterialApp(
+      title: 'Fetch Data Example',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
-      layers: [
-        new TileLayerOptions(
-            urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            subdomains: ['a', 'b', 'c']),
-        new MarkerLayerOptions(
-          markers: [
-            new Marker(
-              width: 80.0,
-              height: 80.0,
-              point: LatLng(51.5, -0.09),
-              builder: (ctx) => new Container(
-                child: new FlutterLogo(),
-              ),
-            ),
-          ],
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Fetch Data Example'),
         ),
-      ],
+        body: Center(
+          child: FutureBuilder<ServiceRoute>(
+            future: serviceRoute,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Text(snapshot.data.potholes.length.toString());
+              } else if (snapshot.hasError) {
+                return Text("${snapshot.error}");
+              }
+
+              // By default, show a loading spinner.
+              return CircularProgressIndicator();
+            },
+          ),
+        ),
+      ),
     );
   }
 }

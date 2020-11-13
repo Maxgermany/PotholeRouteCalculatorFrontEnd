@@ -3,7 +3,7 @@ class PotholeImage {
 
   PotholeImage({this.imageUrl});
 
-  factory PotholeImage.fromJason(Map<String, dynamic> json) {
+  factory PotholeImage.fromJson(Map<String, dynamic> json) {
     return PotholeImage(
       imageUrl: json['url'],
     );

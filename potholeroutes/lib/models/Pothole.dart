@@ -4,16 +4,15 @@ import 'package:potholeroutes/models/PotholeImage.dart';
 
 class Pothole {
   PotholeCoordinates coordinate;
-  PotholeDimensions dimensions;
+  //PotholeDimensions dimensions;
   PotholeImage image;
 
-  Pothole({this.coordinate, this.dimensions, this.image});
+  Pothole({this.coordinate, this.image});
 
-  factory Pothole.fromJason(Map<String, dynamic> json) {
+  factory Pothole.fromJson(Map<String, dynamic> json) {
     return new Pothole(
-      coordinate: PotholeCoordinates.fromJason(json['coordinate']),
-      dimensions: PotholeDimensions.fromJason(json['dimension']),
-      image: PotholeImage.fromJason(json['image']),
+      coordinate: PotholeCoordinates.fromJson(json['coordinate']),
+      image: PotholeImage.fromJson(json['image']),
     );
   }
 }
