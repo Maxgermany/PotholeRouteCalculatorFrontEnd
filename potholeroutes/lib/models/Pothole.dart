@@ -6,14 +6,15 @@ class Pothole {
   PotholeCoordinates coordinate;
   //PotholeDimensions dimensions;
   PotholeImage image;
+  String id;
 
-  Pothole({this.coordinate, this.image});
+  Pothole({this.id, this.coordinate, this.image});
 
   factory Pothole.fromJson(Map<String, dynamic> json) {
     return new Pothole(
+      id: json['uuid'],
       coordinate: PotholeCoordinates.fromJson(json['coordinate']),
       image: PotholeImage.fromJson(json['image']),
     );
   }
-
 }

@@ -74,102 +74,102 @@ class _MainWidgetState extends State<MainWidget> {
           onPressed: () => _scaffoldKey.currentState.openDrawer(),
         ),
         title: const Text("Auftragsübersicht"),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.refresh),
-            onPressed: () {
-              setState(() {});
-            },
-          ),
-          Padding(padding: EdgeInsets.symmetric(horizontal: 10))
-        ],
       ),
       body: SingleChildScrollView(
-        child: FutureBuilder<ServiceRoute>(
-            future: RestService().fetchRoute(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                ServiceRoute route = snapshot.data;
-                return Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Column(
-                    children: [
-                      Card(
-                        child: ListTile(
-                          leading: FlatButton(
-                            color: Colors.orange[300],
-                            onPressed: () {
-                              setState(() {
-                                _showDialog();
-                              });
-                            },
-                            child: const Text('Ändern'),
+        child: Column(
+          children: [
+            Card(
+              child: ListTile(
+                leading: FlatButton(
+                  color: Colors.orange[300],
+                  onPressed: () {
+                    setState(() {
+                      _showDialog();
+                    });
+                    setState(() {});
+                  },
+                  child: const Text('Ändern'),
+                ),
+                title: FutureBuilder<String>(
+                  future: SharedPreferences.getInstance()
+                      .then((value) => value.getString('contractId')),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Text(snapshot.data);
+                    } else {
+                      return Text("Bitte Kontrakt Nr. eingeben");
+                    }
+                  },
+                ),
+                subtitle: Text("Aktuelle Kontrakt Nr."),
+              ),
+            ),
+            FutureBuilder<ServiceRoute>(
+                future: RestService().fetchRoute(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    ServiceRoute route = snapshot.data;
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Column(
+                        children: [
+                          Card(
+                            clipBehavior: Clip.antiAlias,
+                            child: SizedBox(
+                                height: MediaQuery.of(context).size.width,
+                                child: MapWidget()),
                           ),
-                          title: FutureBuilder<String>(
-                            future: SharedPreferences.getInstance()
-                                .then((value) => value.getString('contractId')),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                return Text(snapshot.data);
-                              } else {
-                                return Text("Bitte Kontrakt Nr. eingeben");
-                              }
-                            },
-                          ),
-                          subtitle: Text("Aktuelle Kontrakt Nr."),
-                        ),
-                      ),
-                      Card(
-                        clipBehavior: Clip.antiAlias,
-                        child: SizedBox(
-                            height: MediaQuery.of(context).size.width,
-                            child: MapWidget()),
-                      ),
-                      FutureBuilder(
-                        future: GeolocationService().fetchPotholeAddress(route.potholes.elementAt(0).coordinate),
-                        builder: (BuildContext context, AsyncSnapshot snapshot) {
-                          if(snapshot.hasData) {
-                            PotholeAddress address = snapshot.data;
-                            
-                            return Card(
-                              clipBehavior: Clip.antiAlias,
-                              child: ListTile(
-                                leading: FlatButton(
-                                    color: Colors.green[300],
-                                    onPressed: () {
-                                      setState(() {
-                                        route.potholes.removeAt(0);
-                                      });
-                                    },
-                                    child: Icon(Icons.check)),
-                                title: const Text("Nächstes Schlagloch"),
-                                subtitle: Text(address.getStreetName()),  
-                              )
-                            );
-                          } else {
-                            return Card(
-                              clipBehavior: Clip.antiAlias,
-                              child: ListTile(
-                                leading: FlatButton(
-                                  color: Colors.green[300],
-                                  onPressed: () {
+                          FutureBuilder(
+                              future: GeolocationService().fetchPotholeAddress(
+                                  route.potholes.elementAt(0).coordinate),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot snapshot) {
+                                if (snapshot.hasData) {
+                                  PotholeAddress address = snapshot.data;
 
-                                  },
-                                  child: Icon(Icons.check)
-                                ),
-                                title: Center(child: const CircularProgressIndicator()),
-                              ),
-                            );
-                          }
-                        }
+                                  return Card(
+                                      clipBehavior: Clip.antiAlias,
+                                      child: ListTile(
+                                        leading: FlatButton(
+                                            color: Colors.green[300],
+                                            onPressed: () {
+                                              setState(() {
+                                                route.potholes.removeAt(0);
+                                                RestService().potholeFixed(route
+                                                    .potholes
+                                                    .elementAt(0)
+                                                    .id);
+                                              });
+                                            },
+                                            child: Icon(Icons.check)),
+                                        title:
+                                            const Text("Nächstes Schlagloch"),
+                                        subtitle: Text(address.getStreetName()),
+                                      ));
+                                } else {
+                                  return Card(
+                                    clipBehavior: Clip.antiAlias,
+                                    child: ListTile(
+                                      leading: FlatButton(
+                                          color: Colors.green[300],
+                                          onPressed: () {},
+                                          child: Icon(Icons.check)),
+                                      title: Center(
+                                          child:
+                                              const CircularProgressIndicator()),
+                                    ),
+                                  );
+                                }
+                              }),
+                        ],
                       ),
-                    ],
-                  ),
-                );
-              } else {
-                return Center(child: CircularProgressIndicator());
-              }
-            }),
+                    );
+                  } else {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                }),
+          ],
+        ),
       ),
       drawer: Drawer(
           child: ListView(

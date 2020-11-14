@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:potholeroutes/models/PotholeAddress.dart';
 import 'package:potholeroutes/models/ServiceRoute.dart';
+import 'package:potholeroutes/services/GeolocationService.dart';
 import 'package:potholeroutes/services/RestService.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -20,41 +22,44 @@ class _RouteWidgetState extends State<RouteWidget> {
       ),
       body: Center(
         child: FutureBuilder<ServiceRoute>(
-          future: RestService().fetchRoute(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              ServiceRoute route = snapshot.data;
-              return ListView.builder(
-                  itemCount: route.potholes.length,
-                  itemBuilder: (context, index) {
-                    return Card(
-                      clipBehavior: Clip.antiAlias,
-                      child: ListTile(
-                          leading: FadeInImage.memoryNetwork(
-                            placeholder: kTransparentImage,
-                            image:
-                                route.potholes.elementAt(index).image.imageUrl,
-                          ),
-                          title: Text((index + 1).toString() + ". Schlagloch"),
-                          subtitle: Text("Lat: " +
-                              route.potholes
-                                  .elementAt(index)
-                                  .coordinate
-                                  .latitude
-                                  .toString() +
-                              " Lng: " +
-                              route.potholes
-                                  .elementAt(index)
-                                  .coordinate
-                                  .longitude
-                                  .toString())),
-                    );
-                  });
-            } else {
-              return Center(child: CircularProgressIndicator());
-            }
-          },
-        ),
+            future: RestService().fetchRoute(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                ServiceRoute route = snapshot.data;
+                return FutureBuilder<PotholeAddress>(
+                    future: GeolocationService().fetchPotholeAddress(
+                        route.potholes.elementAt(0).coordinate),
+                    builder: (context, snapshot2) {
+                      if (snapshot2.hasData) {
+                        PotholeAddress address = snapshot2.data;
+                        return ListView.builder(
+                            itemCount: route.potholes.length,
+                            itemBuilder: (context, index) {
+                              return Card(
+                                clipBehavior: Clip.antiAlias,
+                                child: ListTile(
+                                    leading: FadeInImage.memoryNetwork(
+                                      placeholder: kTransparentImage,
+                                      image: route.potholes
+                                          .elementAt(index)
+                                          .image
+                                          .imageUrl,
+                                    ),
+                                    title: Text((index + 1).toString() +
+                                        ". Schlagloch"),
+                                    subtitle: Text(address.getStreetName())),
+                              );
+                            });
+                      } else {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                    });
+              } else {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            }),
       ),
     );
   }
