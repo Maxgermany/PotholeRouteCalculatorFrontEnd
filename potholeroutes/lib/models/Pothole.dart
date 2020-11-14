@@ -1,5 +1,5 @@
 import 'package:potholeroutes/models/PotholeCoordinates.dart';
-import 'package:potholeroutes/models/PotholeDimensions.dart';
+//import 'package:potholeroutes/models/PotholeDimensions.dart';
 import 'package:potholeroutes/models/PotholeImage.dart';
 
 class Pothole {
