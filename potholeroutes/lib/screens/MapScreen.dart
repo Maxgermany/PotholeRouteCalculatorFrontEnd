@@ -3,9 +3,11 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:potholeroutes/models/Pothole.dart';
+import 'package:potholeroutes/models/PotholeAddress.dart';
 import 'package:potholeroutes/models/ServiceRoute.dart';
 import 'package:potholeroutes/services/PersistenceService.dart';
 import 'package:potholeroutes/services/RestService.dart';
+import 'package:potholeroutes/services/GeolocationService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'AboutScreen.dart';
 import 'RouteScreen.dart';
@@ -123,31 +125,43 @@ class _MainWidgetState extends State<MainWidget> {
                             height: MediaQuery.of(context).size.width,
                             child: MapWidget()),
                       ),
-                      Card(
-                        clipBehavior: Clip.antiAlias,
-                        child: ListTile(
-                          leading: FlatButton(
-                              color: Colors.green[300],
-                              onPressed: () {
-                                setState(() {
-                                  route.potholes.removeAt(0);
-                                });
-                              },
-                              child: Icon(Icons.check)),
-                          title: const Text("Nächstes Schlagloch"),
-                          subtitle: Text("Lat: " +
-                              route.potholes
-                                  .elementAt(0)
-                                  .coordinate
-                                  .latitude
-                                  .toString() +
-                              " Lng: " +
-                              route.potholes
-                                  .elementAt(0)
-                                  .coordinate
-                                  .longitude
-                                  .toString()),
-                        ),
+                      FutureBuilder(
+                        future: GeolocationService().fetchPotholeAddress(route.potholes.elementAt(0).coordinate),
+                        builder: (BuildContext context, AsyncSnapshot snapshot) {
+                          if(snapshot.hasData) {
+                            PotholeAddress address = snapshot.data;
+                            
+                            return Card(
+                              clipBehavior: Clip.antiAlias,
+                              child: ListTile(
+                                leading: FlatButton(
+                                    color: Colors.green[300],
+                                    onPressed: () {
+                                      setState(() {
+                                        route.potholes.removeAt(0);
+                                      });
+                                    },
+                                    child: Icon(Icons.check)),
+                                title: const Text("Nächstes Schlagloch"),
+                                subtitle: Text(address.getStreetName()),  
+                              )
+                            );
+                          } else {
+                            return Card(
+                              clipBehavior: Clip.antiAlias,
+                              child: ListTile(
+                                leading: FlatButton(
+                                  color: Colors.green[300],
+                                  onPressed: () {
+
+                                  },
+                                  child: Icon(Icons.check)
+                                ),
+                                title: Center(child: const CircularProgressIndicator()),
+                              ),
+                            );
+                          }
+                        }
                       ),
                     ],
                   ),
