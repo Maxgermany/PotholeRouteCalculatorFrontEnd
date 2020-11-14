@@ -144,7 +144,7 @@ class _MainWidgetState extends State<MainWidget> {
                                             child: Icon(Icons.check)),
                                         title:
                                             const Text("Nächstes Schlagloch"),
-                                        subtitle: Text(address.getStreetName()),
+                                        subtitle: Text(address.address),
                                       ));
                                 } else {
                                   return Card(

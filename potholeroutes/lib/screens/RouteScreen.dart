@@ -47,7 +47,7 @@ class _RouteWidgetState extends State<RouteWidget> {
                                     ),
                                     title: Text((index + 1).toString() +
                                         ". Schlagloch"),
-                                    subtitle: Text(address.getStreetName())),
+                                    subtitle: Text(address.address)),
                               );
                             });
                       } else {

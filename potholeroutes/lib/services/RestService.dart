@@ -36,7 +36,7 @@ class RestService {
 
   void potholeFixed(String potholeId) {
     try {
-      final response = http.delete("$serverUrl/pothole/$potholeId");
+      final response = http.delete("$serverUrl/deletePothole/$potholeId");
     } on Exception catch (_) {}
   }
 }
