@@ -21,18 +21,30 @@ class _AboutWidgetState extends State<AboutWidget> {
             ListTile(
               title: Text(
                 "Developers",
+                style: TextStyle(fontSize: 25),
               ),
             ),
-            ListTile(title: Text("Maximus")),
-            ListTile(title: Text("Fabian")),
-            ListTile(title: Text("Nils")),
-            Divider(),
-            ListTile(
-              title: Text("Third Party Software"),
-            ),
+            Card(
+                clipBehavior: Clip.antiAlias,
+                child: ListTile(title: Text("Maximus Germer"))),
+            Card(
+                clipBehavior: Clip.antiAlias,
+                child: ListTile(title: Text("Fabian Kubon"))),
+            Card(
+                clipBehavior: Clip.antiAlias,
+                child: ListTile(title: Text("Nils Schröder"))),
             ListTile(
               title: Text(
-                  'Diese App benutzt zum Anzeigen der Karten OpenStreetMap unter der Verwendung der Lizenz GDP.'),
+                "Third Party Software",
+                style: TextStyle(fontSize: 25),
+              ),
+            ),
+            Card(
+              clipBehavior: Clip.antiAlias,
+              child: ListTile(
+                title: Text(
+                    'Diese App benutzt zum Anzeigen der Karten OpenStreetMap unter der Verwendung der Lizenz GDP.'),
+              ),
             )
           ],
         )));
