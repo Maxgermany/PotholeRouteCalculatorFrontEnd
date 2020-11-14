@@ -15,4 +15,5 @@ class Pothole {
       image: PotholeImage.fromJson(json['image']),
     );
   }
+
 }
